@@ -1,6 +1,6 @@
 # 🚀 Swift Inbox - Your Ultimate Local Gmail Companion
 
-![UI Preview](https://via.placeholder.com/800x400.png?text=Swift+Inbox+Premium+UI) *[You can replace this placeholder with a real screenshot of the dashboard]*
+![Swift Inbox Dashboard](./screenshot.png)
 
 **Swift Inbox** is a lightning-fast, privacy-first, and beautifully designed local email client. It connects directly to your Gmail account via IMAP, pulls your emails (Inbox & Sent) into a local MySQL database, and serves them to you through a breathtaking, ad-free modern web interface.
 
