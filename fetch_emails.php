@@ -289,13 +289,13 @@ function output_and_exit(): void {
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg:#111a1f; --surface:#1c2730; --surface2:#253240; --surface3:#3B4953;
-  --border:rgba(144,171,139,.12); --border-strong:rgba(144,171,139,.25);
-  --violet:#5A7863; --violet-dim:rgba(90,120,99,.2); --violet-glow:rgba(90,120,99,.5);
-  --cyan:#90AB8B; --cyan-dim:rgba(144,171,139,.15); --cyan-glow:rgba(144,171,139,.4);
-  --text:#EBF4DD; --text-2:#90AB8B; --text-3:#5A7863;
-  --green:#90AB8B; --amber:#c9a84c; --red:#d95f5f;
-  --glass-bg:rgba(28,39,48,.75); --glass-border:rgba(144,171,139,.1);
+  --bg:#0B0B0C; --surface:#161618; --surface2:#1d1d20; --surface3:#252528;
+  --border:rgba(255,255,255,.07); --border-strong:rgba(255,255,255,.14);
+  --violet:#8B5CF6; --violet-dim:rgba(139,92,246,.15); --violet-glow:rgba(139,92,246,.35);
+  --cyan:#06B6D4; --cyan-dim:rgba(6,182,212,.12); --cyan-glow:rgba(6,182,212,.3);
+  --text:#F8FAFC; --text-2:#94a3b8; --text-3:#475569;
+  --green:#22c55e; --amber:#f59e0b; --red:#ef4444;
+  --glass-bg:rgba(22,22,24,.75); --glass-border:rgba(255,255,255,.08);
   --nb-shadow:3px 3px 0px;
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
@@ -308,7 +308,7 @@ body::after{width:400px;height:400px;background:var(--cyan);opacity:.12;bottom:-
 @keyframes shimmer{to{background-position:-200% 0;}}
 .card::after{content:'';position:absolute;top:-60px;right:-60px;width:200px;height:200px;border-radius:50%;background:radial-gradient(circle,rgba(139,92,246,.15),transparent 70%);pointer-events:none;}
 .header-row{display:flex;align-items:center;gap:14px;margin-bottom:28px;}
-.logo-icon{width:44px;height:44px;background:linear-gradient(135deg,var(--violet),var(--cyan));border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0;box-shadow:0 0 22px var(--violet-glow);}
+.logo-icon{width:48px;height:48px;background:transparent;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
 .header-title{font-family:'Montserrat',sans-serif;font-weight:800;font-size:1.15rem;color:var(--text);letter-spacing:-.02em;}
 .header-title span{color:var(--violet);}
 .header-sub{font-size:.75rem;color:var(--text-3);margin-top:2px;}
@@ -330,6 +330,19 @@ body::after{width:400px;height:400px;background:var(--cyan);opacity:.12;bottom:-
 .btn-primary:hover{transform:translate(-2px,-2px);box-shadow:5px 5px 0 #EBF4DD;}
 .btn-ghost{background:transparent;color:var(--text-2);border:1px solid var(--border-strong);}
 .btn-ghost:hover{background:var(--surface3);color:var(--text);}
+.btn-glass {
+  background: var(--glass-bg);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  color: var(--text);
+  border: 1px solid var(--glass-border);
+  box-shadow: 0 4px 12px rgba(0,0,0,.3);
+}
+.btn-glass:hover {
+  background: rgba(255,255,255,.05);
+  border-color: rgba(255,255,255,.15);
+  box-shadow: 0 8px 24px rgba(0,0,0,.5);
+}
 .shortcut-row{display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap;}
 .shortcut{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:8px;font-size:.75rem;font-weight:600;text-decoration:none;border:1px solid var(--border-strong);color:var(--text-3);transition:all .13s;}
 .shortcut:hover{background:var(--surface3);color:var(--text);}
@@ -338,9 +351,18 @@ body::after{width:400px;height:400px;background:var(--cyan);opacity:.12;bottom:-
 <body>
 <div class="card">
   <div class="header-row">
-    <div class="logo-icon">📬</div>
+    <div class="logo-icon">
+      <svg viewBox="0 0 200 240" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;">
+        <path d="M100 0 L190 20 C190 100 170 190 100 240 C30 190 10 100 10 20 Z" fill="#06B6D4"/>
+        <path d="M100 0 L10 20 C10 100 30 190 100 240 Z" fill="#8B5CF6"/>
+        <path d="M100 30 C130 30 150 50 150 80 C150 110 120 130 100 130 C80 130 60 120 60 110" stroke="#FFF" stroke-width="12" stroke-linecap="round"/>
+        <path d="M50 50 L140 50 C145 50 150 55 150 60 L150 100 C150 105 145 110 140 110 L50 110 C45 110 40 105 40 100 L40 60 C40 55 45 50 50 50 Z" fill="#ef4444"/>
+        <path d="M40 60 L95 85 L150 60" stroke="#dc2626" stroke-width="6"/>
+        <path d="M20 150 L70 100 M40 170 L90 120 M60 190 L110 140" stroke="#FFF" stroke-width="8" stroke-linecap="round"/>
+      </svg>
+    </div>
     <div>
-      <div class="header-title">Mail<span>X</span> Sync</div>
+      <div class="header-title">SWIFT <span>INBOX</span> Sync</div>
       <div class="header-sub">Inbox + Sent Mail sync — <?= htmlspecialchars(IMAP_USER) ?></div>
     </div>
   </div>
@@ -370,8 +392,8 @@ body::after{width:400px;height:400px;background:var(--cyan);opacity:.12;bottom:-
   </div>
 
   <div class="btn-group">
-    <a href="index.php"        class="btn btn-primary">→ View Inbox</a>
-    <a href="fetch_emails.php" class="btn btn-ghost">↻ Fetch Again</a>
+    <a href="index.php"        class="btn btn-glass">→ View Inbox</a>
+    <a href="fetch_emails.php" class="btn btn-glass">↻ Fetch Again</a>
   </div>
 </div>
 </body>

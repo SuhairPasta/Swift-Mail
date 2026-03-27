@@ -49,9 +49,7 @@ $inbox_count   = (int)$db->query("SELECT COUNT(*) FROM emails WHERE folder='inbo
 $sent_count    = (int)$db->query("SELECT COUNT(*) FROM emails WHERE folder='sent'")->fetch_row()[0];
 $today_count   = (int)$db->query("SELECT COUNT(*) FROM emails WHERE DATE(received_at)=CURDATE()")->fetch_row()[0];
 
-// The 4 most recent emails across all folders (→ assigned to Page 1–4)
-$page_emails = $db->query("SELECT id,from_name,from_email,to_email,subject,body_plain,folder,received_at,is_read FROM emails ORDER BY received_at DESC LIMIT 4")->fetch_all(MYSQLI_ASSOC);
-$latest_email = $page_emails[0] ?? null; // Page 1 = newest
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -154,21 +152,18 @@ body::after {
 }
 .logo-icon {
   width: 36px; height: 36px;
-  background: linear-gradient(135deg, var(--violet), var(--cyan));
-  border-radius: 10px;
+  background: transparent;
   display: flex; align-items: center; justify-content: center;
-  font-size: 1rem;
-  box-shadow: 0 0 18px var(--violet-glow);
   flex-shrink: 0;
 }
-.logo-text {
+.logo-title {
   font-family: 'Montserrat', sans-serif;
   font-weight: 800;
   font-size: 1.05rem;
   color: var(--text);
   letter-spacing: -.02em;
 }
-.logo-text span { color: var(--violet); }
+.logo-title span { color: var(--violet); }
 
 .topbar-pill {
   background: var(--violet-dim);
@@ -265,6 +260,34 @@ body::after {
 }
 .btn-danger:hover { transform:translate(-2px,-2px); box-shadow:5px 5px 0 var(--red); }
 .btn-danger:active { transform:translate(2px,2px); box-shadow:1px 1px 0 var(--red); }
+
+/* Glass Buttons */
+.btn-glass {
+  background: var(--glass-bg);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  color: var(--text);
+  border: 1px solid var(--glass-border);
+  box-shadow: 0 4px 12px rgba(0,0,0,.3);
+}
+.btn-glass:hover {
+  background: rgba(255,255,255,.05);
+  border-color: rgba(255,255,255,.15);
+  box-shadow: 0 8px 24px rgba(0,0,0,.5);
+}
+.btn-glass-danger {
+  background: rgba(239,68,68,.1);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  color: var(--red);
+  border: 1px solid rgba(239,68,68,.3);
+  box-shadow: 0 4px 12px rgba(0,0,0,.3);
+}
+.btn-glass-danger:hover {
+  background: rgba(239,68,68,.2);
+  border-color: rgba(239,68,68,.5);
+  box-shadow: 0 8px 24px rgba(0,0,0,.5);
+}
 /* Cyan ghost */
 .btn-cyan {
   background: var(--cyan-dim);
@@ -698,8 +721,17 @@ body::after {
 <!-- ── TOP BAR ── -->
 <header class="topbar">
   <a href="index.php" class="logo">
-    <div class="logo-icon">📬</div>
-    <span class="logo-text">Mail<span>X</span></span>
+    <div class="logo-icon swift-logo">
+      <svg viewBox="0 0 200 240" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;">
+        <path d="M100 0 L190 20 C190 100 170 190 100 240 C30 190 10 100 10 20 Z" fill="#06B6D4"/>
+        <path d="M100 0 L10 20 C10 100 30 190 100 240 Z" fill="#8B5CF6"/>
+        <path d="M100 30 C130 30 150 50 150 80 C150 110 120 130 100 130 C80 130 60 120 60 110" stroke="#FFF" stroke-width="12" stroke-linecap="round"/>
+        <path d="M50 50 L140 50 C145 50 150 55 150 60 L150 100 C150 105 145 110 140 110 L50 110 C45 110 40 105 40 100 L40 60 C40 55 45 50 50 50 Z" fill="#ef4444"/>
+        <path d="M40 60 L95 85 L150 60" stroke="#dc2626" stroke-width="6"/>
+        <path d="M20 150 L70 100 M40 170 L90 120 M60 190 L110 140" stroke="#FFF" stroke-width="8" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <span class="logo-title">SWIFT <span>INBOX</span></span>
   </a>
   <?php if ($unread_count > 0): ?>
   <div class="topbar-pill"><?= $unread_count ?> unread</div>
@@ -713,12 +745,21 @@ body::after {
   </form>
 
   <div class="topbar-right">
-    <button id="fetch-btn" class="btn btn-primary" title="Fetch inbox &amp; sent mail from Gmail">
+    <label style="display:flex;align-items:center;gap:8px;font-size:0.8rem;color:var(--text-2);cursor:pointer;margin-right:10px;">
+      <span style="font-weight:600;">Auto Fetch (10s)</span>
+      <div style="position:relative;width:36px;height:20px;">
+        <input type="checkbox" id="auto-fetch-toggle" style="opacity:0;width:0;height:0;position:absolute;">
+        <div id="toggle-bg" style="position:absolute;inset:0;background:var(--surface3);border-radius:10px;transition:0.3s;border:1px solid var(--border-strong);">
+          <div id="toggle-knob" style="position:absolute;left:2px;top:2px;width:14px;height:14px;border-radius:50%;background:var(--text-2);transition:0.3s;"></div>
+        </div>
+      </div>
+    </label>
+    <button id="fetch-btn" class="btn btn-glass" title="Fetch inbox &amp; sent mail from Gmail">
       <span id="fetch-icon">↻</span> Fetch Emails
     </button>
     <?php if ($total_count > 0): ?>
     <form method="POST" style="display:inline" onsubmit="return confirm('Delete ALL emails?')">
-      <button name="delete_all" value="1" class="btn btn-danger" type="submit">🗑</button>
+      <button name="delete_all" value="1" class="btn btn-glass-danger" type="submit">🗑</button>
     </form>
     <?php endif; ?>
   </div>
@@ -740,10 +781,7 @@ body::after {
       <span>📤</span> Sent
       <?php if ($sent_count): ?><span class="nav-cnt cyan"><?= $sent_count ?></span><?php endif; ?>
     </a>
-    <a href="index.php?filter=starred" class="nav-item <?= $filter==='starred'?'active':'' ?>">
-      <span>⭐</span> Starred
-      <?php if ($starred_count): ?><span class="nav-cnt" style="background:var(--amber)"><?= $starred_count ?></span><?php endif; ?>
-    </a>
+
     <a href="index.php?filter=unread" class="nav-item <?= $filter==='unread'?'active':'' ?>">
       <span>📩</span> Unread
       <?php if ($unread_count): ?><span class="nav-cnt"><?= $unread_count ?></span><?php endif; ?>
@@ -780,52 +818,7 @@ body::after {
       </div>
     </div>
 
-    <!-- LATEST MAIL TABLE -->
-    <?php if ($latest_email): ?>
-    <div style="margin:20px 24px 0;background:rgba(28,39,48,.75);backdrop-filter:blur(20px);border:1px solid rgba(144,171,139,.1);border-radius:16px;overflow:hidden">
-      <div style="display:flex;align-items:center;gap:10px;padding:14px 20px;border-bottom:1px solid rgba(144,171,139,.12)">
-        <span style="font-family:'Montserrat',sans-serif;font-weight:700;font-size:.9rem;color:var(--text)">📄 Latest Mail</span>
-        <span style="font-size:.7rem;color:var(--text-3);background:var(--surface3);padding:2px 10px;border-radius:999px;border:1px solid rgba(144,171,139,.15)">Directory: Page 1</span>
-        <div style="margin-left:auto;display:flex;gap:8px">
-          <?php foreach(range(1,4) as $pn): ?>
-          <a href="page<?= $pn ?>.php" style="font-size:.72rem;font-weight:700;padding:3px 10px;border-radius:6px;text-decoration:none;color:<?= $pn===1 ? 'var(--text)' : 'var(--text-3)' ?>;background:<?= $pn===1 ? 'var(--violet)' : 'var(--surface3)' ?>;border:1px solid rgba(144,171,139,.2)">P<?= $pn ?></a>
-          <?php endforeach; ?>
-        </div>
-      </div>
-      <div style="overflow-x:auto">
-      <table style="width:100%;border-collapse:collapse;font-size:.82rem">
-        <thead>
-          <tr style="background:rgba(90,120,99,.1)">
-            <th style="padding:10px 18px;text-align:left;color:var(--text-3);font-weight:700;font-size:.68rem;text-transform:uppercase;letter-spacing:.08em;white-space:nowrap">Sender</th>
-            <th style="padding:10px 18px;text-align:left;color:var(--text-3);font-weight:700;font-size:.68rem;text-transform:uppercase;letter-spacing:.08em;white-space:nowrap">Receiver</th>
-            <th style="padding:10px 18px;text-align:left;color:var(--text-3);font-weight:700;font-size:.68rem;text-transform:uppercase;letter-spacing:.08em;white-space:nowrap">Subject</th>
-            <th style="padding:10px 18px;text-align:left;color:var(--text-3);font-weight:700;font-size:.68rem;text-transform:uppercase;letter-spacing:.08em;white-space:nowrap">Body Preview</th>
-            <th style="padding:10px 18px;text-align:left;color:var(--text-3);font-weight:700;font-size:.68rem;text-transform:uppercase;letter-spacing:.08em;white-space:nowrap">Status</th>
-            <th style="padding:10px 18px;text-align:left;color:var(--text-3);font-weight:700;font-size:.68rem;text-transform:uppercase;letter-spacing:.08em;white-space:nowrap">Directory</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td style="padding:12px 18px;color:var(--text-2);border-top:1px solid rgba(144,171,139,.08)"><?= htmlspecialchars($latest_email['from_name'] ?: $latest_email['from_email'] ?: '—') ?></td>
-            <td style="padding:12px 18px;color:var(--text-2);border-top:1px solid rgba(144,171,139,.08)"><?= htmlspecialchars($latest_email['to_email'] ?: '—') ?></td>
-            <td style="padding:12px 18px;color:var(--text);font-weight:600;border-top:1px solid rgba(144,171,139,.08)"><?= htmlspecialchars(mb_substr($latest_email['subject'] ?? '(No Subject)', 0, 50)) ?></td>
-            <td style="padding:12px 18px;color:var(--text-3);border-top:1px solid rgba(144,171,139,.08);max-width:260px"><?= htmlspecialchars(mb_substr(strip_tags($latest_email['body_plain'] ?? ''), 0, 80)) ?>…</td>
-            <td style="padding:12px 18px;border-top:1px solid rgba(144,171,139,.08);white-space:nowrap">
-              <?php if ($latest_email['is_read']): ?>
-              <span style="display:inline-flex;align-items:center;gap:5px;background:rgba(90,120,99,.15);color:var(--cyan);font-size:.7rem;font-weight:700;padding:3px 10px;border-radius:999px;border:1px solid rgba(144,171,139,.25)">&#10003; Read</span>
-              <?php else: ?>
-              <span style="display:inline-flex;align-items:center;gap:5px;background:rgba(201,168,76,.12);color:var(--amber);font-size:.7rem;font-weight:700;padding:3px 10px;border-radius:999px;border:1px solid rgba(201,168,76,.3)">● Unread</span>
-              <?php endif; ?>
-            </td>
-            <td style="padding:12px 18px;border-top:1px solid rgba(144,171,139,.08)">
-              <a href="page1.php" style="display:inline-block;background:var(--violet);color:var(--text);font-size:.72rem;font-weight:700;padding:3px 12px;border-radius:6px;text-decoration:none;border:1px solid rgba(235,244,221,.25)">Page 1</a>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-      </div>
-    </div>
-    <?php endif; ?>
+
 
     <!-- EMAIL LIST -->
     <div class="list-section">
@@ -849,7 +842,7 @@ body::after {
           <h3><?= $search ? 'No results found' : 'Inbox is empty' ?></h3>
           <p><?= $search ? 'Try different search terms.' : 'Hit <strong>Fetch</strong> to pull your latest Gmail messages.' ?></p>
           <?php if (!$search): ?>
-          <a href="fetch_emails.php" class="btn btn-primary" style="margin-top:8px">↻ Fetch Emails</a>
+          <a href="fetch_emails.php" class="btn btn-glass" style="margin-top:8px">↻ Fetch Emails</a>
           <?php endif; ?>
         </div>
       <?php else: ?>
@@ -917,6 +910,107 @@ body::after {
 </div><!-- /.layout -->
 
 <script>
+// Auto Fetch Logic
+const autoFetchToggle = document.getElementById('auto-fetch-toggle');
+const toggleBg = document.getElementById('toggle-bg');
+const toggleKnob = document.getElementById('toggle-knob');
+let autoFetchInterval = null;
+
+// Restore state from localStorage
+const storedAutoFetch = localStorage.getItem('MailXSettings.autoFetch') === 'true';
+autoFetchToggle.checked = storedAutoFetch;
+updateToggleUI();
+
+if (storedAutoFetch) {
+  startAutoFetch();
+}
+
+autoFetchToggle.addEventListener('change', (e) => {
+  const isChecked = e.target.checked;
+  localStorage.setItem('MailXSettings.autoFetch', isChecked);
+  updateToggleUI();
+  
+  if (isChecked) {
+    startAutoFetch();
+  } else {
+    stopAutoFetch();
+  }
+});
+
+function updateToggleUI() {
+  if (autoFetchToggle.checked) {
+    toggleBg.style.background = 'var(--cyan)';
+    toggleBg.style.borderColor = 'var(--cyan)';
+    toggleKnob.style.transform = 'translateX(16px)';
+    toggleKnob.style.background = '#fff';
+  } else {
+    toggleBg.style.background = 'var(--surface3)';
+    toggleBg.style.borderColor = 'var(--border-strong)';
+    toggleKnob.style.transform = 'translateX(0)';
+    toggleKnob.style.background = 'var(--text-2)';
+  }
+}
+
+function startAutoFetch() {
+  if (autoFetchInterval) clearInterval(autoFetchInterval);
+  autoFetchInterval = setInterval(() => {
+    doFetchEmails(true);
+  }, 10000);
+}
+
+function stopAutoFetch() {
+  if (autoFetchInterval) {
+    clearInterval(autoFetchInterval);
+    autoFetchInterval = null;
+  }
+}
+
+function doFetchEmails(silent = false) {
+  const btn  = document.getElementById('fetch-btn');
+  const icon = document.getElementById('fetch-icon');
+  if(btn.disabled) return;
+  
+  icon.classList.add('spinning');
+  btn.disabled = true;
+  btn.style.opacity = '0.7';
+  
+  fetch('fetch_emails.php?ajax=1')
+    .then(r => r.json())
+    .then(data => {
+      if(!data || !data.log) {
+          throw new Error('Invalid response');
+      }
+      const last = data.log[data.log.length - 1] || {msg: 'Sync complete!'};
+      if (!silent) showToast('✅ ' + last.msg);
+      // Only reload if something was inserted, or if the user clicked manually
+      const syncCompleteMsg = data.log.find(l => l.msg && l.msg.includes('Total — Inserted:'));
+      let wasInserted = false;
+      if (syncCompleteMsg && syncCompleteMsg.msg) {
+         const match = syncCompleteMsg.msg.match(/Inserted:\s*(\d+)/);
+         if (match && parseInt(match[1]) > 0) wasInserted = true;
+      }
+      setTimeout(() => {
+        if (!silent || wasInserted) {
+            location.reload();
+        } else {
+            icon.classList.remove('spinning');
+            btn.disabled = false;
+            btn.style.opacity = '';
+        }
+      }, silent ? 500 : 1800);
+    })
+    .catch(() => {
+      if (!silent) {
+          showToast('⚠️ Could not reach server — redirecting…');
+          setTimeout(() => { location.href = 'fetch_emails.php'; }, 1000);
+      } else {
+          icon.classList.remove('spinning');
+          btn.disabled = false;
+          btn.style.opacity = '';
+      }
+    });
+}
+
 // Keyboard: '/' focuses search
 document.addEventListener('keydown', e => {
   if (e.key === '/' && document.activeElement.tagName !== 'INPUT') {
@@ -927,27 +1021,7 @@ document.addEventListener('keydown', e => {
 
 // AJAX fetch — fetches both inbox and sent in one click
 document.getElementById('fetch-btn').addEventListener('click', function() {
-  const btn  = this;
-  const icon = document.getElementById('fetch-icon');
-  icon.classList.add('spinning');
-  btn.disabled = true;
-  btn.style.opacity = '0.7';
-  fetch('fetch_emails.php?ajax=1')
-    .then(r => r.json())
-    .then(data => {
-      const last = data.log[data.log.length - 1] || {msg: 'Sync complete!'};
-      showToast('✅ ' + last.msg);
-      setTimeout(() => location.reload(), 1800);
-    })
-    .catch(() => {
-      showToast('⚠️ Could not reach server — redirecting…');
-      setTimeout(() => { location.href = 'fetch_emails.php'; }, 1000);
-    })
-    .finally(() => {
-      icon.classList.remove('spinning');
-      btn.disabled = false;
-      btn.style.opacity = '';
-    });
+  doFetchEmails(false);
 });
 
 function showToast(msg) {

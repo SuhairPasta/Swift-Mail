@@ -44,34 +44,34 @@ $av_color   = $av_palette[abs(crc32($email['from_email'])) % 8];
 <style>
 :root {
   /* ── Surfaces ── */
-  --bg:           #111a1f;
-  --surface:      #1c2730;
-  --surface2:     #253240;
-  --surface3:     #3B4953;
-  --border:       rgba(144,171,139,.12);
-  --border-strong:rgba(144,171,139,.25);
+  --bg:           #0B0B0C;
+  --surface:      #161618;
+  --surface2:     #1d1d20;
+  --surface3:     #252528;
+  --border:       rgba(255,255,255,.07);
+  --border-strong:rgba(255,255,255,.14);
 
-  /* ── Primary accent: dark sage green ── */
-  --violet:       #5A7863;
-  --violet-dim:   rgba(90,120,99,.2);
-  --violet-glow:  rgba(90,120,99,.5);
+  /* ── Primary accent: purple ── */
+  --violet:       #8B5CF6;
+  --violet-dim:   rgba(139,92,246,.15);
+  --violet-glow:  rgba(139,92,246,.35);
 
-  /* ── Secondary accent: medium sage green ── */
-  --cyan:         #90AB8B;
-  --cyan-dim:     rgba(144,171,139,.15);
-  --cyan-glow:    rgba(144,171,139,.4);
+  /* ── Secondary accent: cyan ── */
+  --cyan:         #06B6D4;
+  --cyan-dim:     rgba(6,182,212,.12);
+  --cyan-glow:    rgba(6,182,212,.3);
 
   /* ── Text ── */
-  --text:         #EBF4DD;
-  --text-2:       #90AB8B;
-  --text-3:       #5A7863;
+  --text:         #F8FAFC;
+  --text-2:       #94a3b8;
+  --text-3:       #475569;
 
   /* ── Semantic ── */
-  --amber:        #c9a84c;
-  --red:          #d95f5f;
-  --green:        #90AB8B;
-  --glass-bg:     rgba(28,39,48,.75);
-  --glass-border: rgba(144,171,139,.1);
+  --amber:        #f59e0b;
+  --red:          #ef4444;
+  --green:        #22c55e;
+  --glass-bg:     rgba(22,22,24,.7);
+  --glass-border: rgba(255,255,255,.08);
   --nb-shadow:    3px 3px 0px;
 }
 *,*::before,*::after { box-sizing:border-box; margin:0; padding:0; }
@@ -108,20 +108,17 @@ body::after  { width:400px;height:400px; background:var(--cyan);   bottom:-150px
   display:flex; align-items:center; gap:9px; text-decoration:none;
 }
 .logo-icon {
-  width:34px; height:34px;
-  background:linear-gradient(135deg,var(--violet),var(--cyan));
-  border-radius:9px;
+  width:36px; height:36px;
+  background:transparent;
   display:flex; align-items:center; justify-content:center;
-  font-size:.95rem;
-  box-shadow:0 0 16px var(--violet-glow);
   flex-shrink:0;
 }
-.logo-text {
+.logo-title {
   font-family:'Montserrat',sans-serif;
-  font-weight:800; font-size:1rem;
+  font-weight:800; font-size:1.05rem;
   color:var(--text); letter-spacing:-.02em;
 }
-.logo-text span { color:var(--violet); }
+.logo-title span { color:var(--violet); }
 .topbar-subject {
   flex:1;
   font-size:.85rem;
@@ -331,8 +328,17 @@ body::after  { width:400px;height:400px; background:var(--cyan);   bottom:-150px
 <!-- TOPBAR -->
 <header class="topbar">
   <a href="index.php" class="logo">
-    <div class="logo-icon">📬</div>
-    <span class="logo-text">Mail<span>X</span></span>
+    <div class="logo-icon swift-logo">
+      <svg viewBox="0 0 200 240" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;">
+        <path d="M100 0 L190 20 C190 100 170 190 100 240 C30 190 10 100 10 20 Z" fill="#06B6D4"/>
+        <path d="M100 0 L10 20 C10 100 30 190 100 240 Z" fill="#8B5CF6"/>
+        <path d="M100 30 C130 30 150 50 150 80 C150 110 120 130 100 130 C80 130 60 120 60 110" stroke="#FFF" stroke-width="12" stroke-linecap="round"/>
+        <path d="M50 50 L140 50 C145 50 150 55 150 60 L150 100 C150 105 145 110 140 110 L50 110 C45 110 40 105 40 100 L40 60 C40 55 45 50 50 50 Z" fill="#ef4444"/>
+        <path d="M40 60 L95 85 L150 60" stroke="#dc2626" stroke-width="6"/>
+        <path d="M20 150 L70 100 M40 170 L90 120 M60 190 L110 140" stroke="#FFF" stroke-width="8" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <span class="logo-title">SWIFT <span>INBOX</span></span>
   </a>
   <div class="topbar-subject"><?= htmlspecialchars($email['subject'] ?? '(No Subject)') ?></div>
   <div class="nav-arrows">
