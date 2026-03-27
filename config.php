@@ -15,8 +15,8 @@ define('DB_NAME',   'email_system');
 // generate an App Password at: https://myaccount.google.com/apppasswords
 define('IMAP_HOST',      '{imap.gmail.com:993/imap/ssl}INBOX');
 define('IMAP_HOST_SENT', '{imap.gmail.com:993/imap/ssl}[Gmail]/Sent Mail');
-define('IMAP_USER',      '1suhairrizwan@gmail.com');
-define('IMAP_PASS',      'gzypepbavjanicve'); // <-- Replace this
+define('IMAP_USER',      'Your Email Address'); // <-- Replace this with your actual email id
+define('IMAP_PASS',      '16-character-Gmail App Password'); // <-- Replace this with you actual gmail app password (remove the spaces)
 
 // --- Fetch Settings ---
 define('FETCH_LIMIT',    50);   // Max emails to fetch per run (inbox)
