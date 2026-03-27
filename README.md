@@ -81,9 +81,10 @@ Google blocks third-party apps from logging in with your main password. You need
 ---
 
 ## ✨ Core Features
-- **Smart Inbox & Sent Sync**: Pulls both incoming and outgoing emails concurrently.
-- **10-Second Auto-Fetch Toggle**: Switch on the auto-fetcher to pull new emails seamlessly in the background every 10 seconds.
-- **Intelligent Deduplication**: Safely run the fetcher manually or automatically as many times as you want without creating duplicate emails in your database.
+- **Smart Inbox & Sent Sync**: By default, the script connects to Gmail and fetches the **latest 50 emails from your Inbox** and your **latest 50 emails from Sent Mail** every time you hit run (you can change this number in `config.php`).
+- **Intelligent Deduplication (Skips Duplicates)**: It compares incoming emails to your XAMPP database and instantly skips any duplicate emails that have already been saved, meaning it will only ever process brand new ones.
+- **Lightning-Fast XAMPP Database Caching**: All emails are permanently downloaded and stored directly inside your local XAMPP MySQL database. When you open the web interface, the emails are fetched straight from your XAMPP database rather than making slow Google servers calls!
+- **10-Second Auto-Fetch Toggle**: Switch on the auto-fetcher to steadily pull new emails seamlessly in the background every 10 seconds without lifting a finger.
 - **Bento-Grid Analytics**: Track total emails, unread counts, and mailbox distribution seamlessly at the top of your inbox.
 - **Sandboxed HTML Reader**: Read complex HTML emails safely within an isolated iframe, or completely strip all styling with the Plain-Text mode.
 - **Offline Capable**: Read, search, and manage your emails without an internet connection.
